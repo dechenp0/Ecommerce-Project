@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DechenShop - Online Stationery Shop</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    :root {
+      --blue-50: #EBF5FF;
+      --blue-100: #C7E4FF;
+      --blue-200: #93CBFF;
+      --blue-400: #3B9EF5;
+      --blue-600: #1A6FBA;
+      --blue-800: #0D3E6E;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #F7FBFF;
+      color: #1a2235;
+    }
+
+    .serif {
+      font-family: 'DM Serif Display', serif;
+    }
+
+    .hero-blob {
+      position: absolute;
+      width: 560px;
+      height: 560px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #c7e4ff 0%, #ebf5ff 60%, transparent 100%);
+      top: -120px;
+      right: -80px;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .nav-link {
+      transition: 0.2s;
+    }
+
+    .nav-link:hover {
+      color: var(--blue-600);
+    }
+
+    .btn-primary {
+      background: var(--blue-400);
+      color: white;
+      border-radius: 999px;
+      padding: 12px 28px;
+      font-weight: 600;
+      transition: 0.2s;
+      display: inline-block;
+    }
+
+    .btn-primary:hover {
+      background: var(--blue-600);
+      transform: translateY(-2px);
+    }
+
+    .btn-outline {
+      border: 1.5px solid var(--blue-400);
+      color: var(--blue-600);
+      border-radius: 999px;
+      padding: 11px 26px;
+      font-weight: 600;
+      transition: 0.2s;
+      display: inline-block;
+      background: white;
+    }
+
+    .btn-outline:hover {
+      background: var(--blue-50);
+      transform: translateY(-2px);
+    }
+
+    .section-tag {
+      background: var(--blue-100);
+      color: var(--blue-600);
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 14px;
+      display: inline-block;
+      margin-bottom: 12px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .product-card {
+      background: white;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid #d9eeff;
+      transition: 0.25s;
+    }
+
+    .product-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 14px 35px rgba(59, 158, 245, 0.15);
+    }
+
+    .badge {
+      background: var(--blue-100);
+      color: var(--blue-800);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      text-transform: uppercase;
+    }
+
+    .cart-btn {
+      width: 100%;
+      background: var(--blue-50);
+      color: var(--blue-600);
+      border: 1px solid var(--blue-200);
+      padding: 10px;
+      border-radius: 999px;
+      font-weight: 600;
+      transition: 0.2s;
+      cursor: pointer;
+    }
+
+    .cart-btn:hover {
+      background: var(--blue-400);
+      color: white;
+    }
+
+    .category-chip {
+      border: 1.5px solid var(--blue-200);
+      color: var(--blue-600);
+      background: white;
+      border-radius: 999px;
+      padding: 8px 18px;
+      font-size: 14px;
+      font-weight: 500;
+      transition: 0.2s;
+      cursor: pointer;
+    }
+
+    .category-chip:hover,
+    .category-chip.active {
+      background: var(--blue-400);
+      color: white;
+      border-color: var(--blue-400);
+    }
+
+    .feature-card {
+      background: white;
+      border-radius: 18px;
+      padding: 28px 24px;
+      border: 1px solid #d9eeff;
+      transition: 0.2s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .icon-wrap {
+      width: 50px;
+      height: 50px;
+      border-radius: 14px;
+      background: var(--blue-100);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 18px;
+    }
+
+    .cart-count {
+      position: absolute;
+      top: -6px;
+      right: -8px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--blue-400);
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    footer {
+      background: var(--blue-800);
+      color: #c7e4ff;
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #0D3E6E;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 12px;
+      opacity: 0;
+      transform: translateY(60px);
+      transition: 0.3s;
+      z-index: 999;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(25px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .fade-up {
+      animation: fadeUp 0.5s ease both;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ================= NAVBAR ================= -->
+<nav class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-blue-100 shadow-sm">
+  <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+
+    <!-- Logo -->
+    <a href="index.html" class="flex items-center gap-2">
+      <div class="w-[34px] h-[34px] bg-[#3B9EF5] rounded-[10px] flex items-center justify-center">
+        D$
+      </div>
+      <span class="serif text-2xl text-[#0D3E6E]">
+        DechenShop
+      </span>
+    </a>
+
+    <!-- Links -->
+    <div class="hidden md:flex items-center gap-7 text-sm font-medium text-gray-600">
+      <a href="#products" class="nav-link">Products</a>
+      <a href="#categories" class="nav-link">Categories</a>
+      <a href="#features" class="nav-link">Features</a>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex items-center gap-3">
+
+      <!-- Cart -->
+      <!-- <a href="user/cart.php" class="relative p-2 rounded-full hover:bg-blue-50 transition">
+        🛒
+        <span class="cart-count" id="cartCount">0</span>
+      </a> -->
+
+      <!-- FIXED LOGIN / REGISTER -->
+      <a href="login.php" class="btn-outline text-sm py-2 px-5">
+        Login
+      </a>
+
+      <a href="register.php" class="btn-primary text-sm py-2 px-5">
+        Sign Up
+      </a>
+
+    </div>
+  </div>
+</nav>
+
+<!-- ================= HERO ================= -->
+<section class="relative overflow-hidden pt-20 pb-24 px-6">
+
+  <div class="hero-blob"></div>
+
+  <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center relative z-10">
+
+    <!-- Left -->
+    <div class="fade-up">
+
+      <div class="section-tag">
+        ✦ New Arrivals
+      </div>
+
+      <h1 class="serif text-5xl md:text-6xl leading-tight mb-5 text-[#0D3E6E]">
+        Your perfect stationery, delivered.
+      </h1>
+
+      <p class="text-gray-500 text-lg mb-8 max-w-md">
+        Notebooks, pens, art supplies and planners for students and professionals.
+      </p>
+
+      <div class="flex flex-wrap gap-3">
+        <a href="#products" class="btn-primary">Shop Now</a>
+        <a href="#categories" class="btn-outline">Browse Categories</a>
+      </div>
+
+    </div>
+
+    <!-- Right -->
+    <div class="flex justify-center fade-up">
+      <div class="w-[320px] h-[320px] bg-[#C7E4FF] rounded-full flex items-center justify-center text-[120px]">
+        📚
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= CATEGORIES ================= -->
+<section id="categories" class="py-14 px-6 bg-white">
+
+  <div class="max-w-6xl mx-auto">
+
+    <div class="text-center mb-10">
+      <div class="section-tag">Categories</div>
+      <h2 class="serif text-3xl text-[#0D3E6E]">
+        Shop by type
+      </h2>
+    </div>
+
+    <div class="flex flex-wrap justify-center gap-3">
+
+      <button class="category-chip active" onclick="filterProducts(this,'all')">
+        All
+      </button>
+
+      <button class="category-chip" onclick="filterProducts(this,'1')">
+        📓 Notebooks
+      </button>
+
+      <button class="category-chip" onclick="filterProducts(this,'2')">
+        ✒️ Pens
+      </button>
+
+      <button class="category-chip" onclick="filterProducts(this,'3')">
+        🎨 Art Supplies
+      </button>
+
+      <button class="category-chip" onclick="filterProducts(this,'4')">
+        📎 Office Supplies
+      </button>
+
+      <button class="category-chip" onclick="filterProducts(this,'5')">
+        📅 Planners
+      </button>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================= PRODUCTS ================= -->
+<section id="products" class="py-14 px-6">
+
+  <div class="max-w-6xl mx-auto">
+
+    <div class="flex items-center justify-between mb-10">
+
+      <div>
+        <div class="section-tag">Products</div>
+
+        <h2 class="serif text-3xl text-[#0D3E6E]">
+          Featured Products
+        </h2>
+      </div>
+
+      <a href="user/products.php" class="btn-outline hidden md:inline-block">
+        View All →
+      </a>
+
+    </div>
+
+    <!-- Product Grid -->
+    <div id="productGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"></div>
+
+  </div>
+</section>
+
+<!-- ================= FEATURES ================= -->
+<section id="features" class="py-14 px-6 bg-white">
+
+  <div class="max-w-6xl mx-auto">
+
+    <div class="text-center mb-10">
+      <div class="section-tag">Why Choose Us</div>
+
+      <h2 class="serif text-3xl text-[#0D3E6E]">
+        Better shopping experience
+      </h2>
+    </div>
+
+    <div class="grid md:grid-cols-4 gap-5">
+
+      <div class="feature-card text-center">
+        <div class="icon-wrap mx-auto">✅</div>
+        <h3 class="font-semibold mb-1 text-[#0D3E6E]">Quality Products</h3>
+        <p class="text-sm text-gray-400">
+          Premium stationery items for everyone.
+        </p>
+      </div>
+
+      <div class="feature-card text-center">
+        <div class="icon-wrap mx-auto">🚚</div>
+        <h3 class="font-semibold mb-1 text-[#0D3E6E]">Fast Delivery</h3>
+        <p class="text-sm text-gray-400">
+          Same day delivery inside valley.
+        </p>
+      </div>
+
+      <div class="feature-card text-center">
+        <div class="icon-wrap mx-auto">🔒</div>
+        <h3 class="font-semibold mb-1 text-[#0D3E6E]">Secure Payment</h3>
+        <p class="text-sm text-gray-400">
+          Khalti, eSewa and card support.
+        </p>
+      </div>
+
+      <div class="feature-card text-center">
+        <div class="icon-wrap mx-auto">💬</div>
+        <h3 class="font-semibold mb-1 text-[#0D3E6E]">24/7 Support</h3>
+        <p class="text-sm text-gray-400">
+          Friendly support anytime.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================= CTA ================= -->
+<section class="py-16 px-6 bg-[#0D3E6E]">
+
+  <div class="max-w-2xl mx-auto text-center">
+
+    <h2 class="serif text-3xl text-white mb-4">
+      Ready to start shopping?
+    </h2>
+
+    <p class="text-blue-200 mb-7">
+      Create your account and get 10% OFF.
+    </p>
+
+    <a href="register.php" class="btn-primary">
+      Create Account
+    </a>
+
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer class="py-10 px-6">
+
+  <div class="max-w-6xl mx-auto grid md:grid-cols-4 gap-8 text-sm">
+
+    <div>
+      <h2 class="serif text-2xl text-white">
+        DechenShop
+      </h2>
+
+      <p class="text-blue-300 mt-2 text-xs">
+        Your one-stop stationery store.
+      </p>
+    </div>
+
+    <div>
+      <p class="font-semibold text-white mb-3">Shop</p>
+
+      <ul class="space-y-1 text-blue-300">
+        <li><a href="#">Notebooks</a></li>
+        <li><a href="#">Pens</a></li>
+        <li><a href="#">Art Supplies</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <p class="font-semibold text-white mb-3">Account</p>
+
+      <ul class="space-y-1 text-blue-300">
+        <li><a href="login.php">Login</a></li>
+        <li><a href="register.php">Register</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <p class="font-semibold text-white mb-3">Support</p>
+
+      <ul class="space-y-1 text-blue-300">
+        <li><a href="#">FAQ</a></li>
+        <li><a href="#">Contact</a></li>
+        <li><a href="#">Shipping</a></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="max-w-6xl mx-auto mt-8 pt-6 border-t border-blue-800 text-center text-blue-400 text-xs">
+    © 2026 DechenShop. All rights reserved.
+  </div>
+</footer>
+
+
+<!-- ================= SCRIPT ================= -->
+<script>
+
+  const products = [
+    {
+      id: 1,
+      name: "Classic Notebook",
+      category: 1,
+      price: 299,
+      stock: 20,
+      tag: "Best"
+    },
+    {
+      id: 2,
+      name: "Gel Pen Set",
+      category: 2,
+      price: 199,
+      stock: 40,
+      tag: "Popular"
+    },
+    {
+      id: 3,
+      name: "Watercolor Set",
+      category: 3,
+      price: 599,
+      stock: 15,
+      tag: "New"
+    },
+    {
+      id: 4,
+      name: "Office Stapler",
+      category: 4,
+      price: 349,
+      stock: 12,
+      tag: ""
+    },
+    {
+      id: 5,
+      name: "Weekly Planner",
+      category: 5,
+      price: 449,
+      stock: 18,
+      tag: "Premium"
+    }
+  ];
+
+  const emojis = {
+    1: "📓",
+    2: "✒️",
+    3: "🎨",
+    4: "📎",
+    5: "📅"
+  };
+
+  let cart = JSON.parse(localStorage.getItem("paperly_cart")) || [];
+
+  function updateCartCount() {
+
+    const total = cart.reduce((sum, item) => {
+      return sum + item.qty;
+    }, 0);
+
+    document.getElementById("cartCount").textContent = total;
+  }
+
+  function renderProducts(list) {
+
+    const grid = document.getElementById("productGrid");
+
+    if (list.length === 0) {
+      grid.innerHTML = `
+        <p class="text-center col-span-4 text-gray-400">
+          No products found.
+        </p>
+      `;
+      return;
+    }
+
+    grid.innerHTML = list.map((product) => {
+
+      return `
+        <div class="product-card fade-up">
+
+          <div class="h-[160px] flex items-center justify-center text-[54px] bg-[#EBF5FF] relative">
+
+            ${emojis[product.category]}
+
+            ${
+              product.tag
+                ? `<span class="badge absolute top-3 left-3">${product.tag}</span>`
+                : ""
+            }
+
+          </div>
+
+          <div class="p-4">
+
+            <p class="text-sm text-slate-400 mb-1">
+              ${
+                ["","Notebook","Pens","Art","Office","Planner"][product.category]
+              }
+            </p>
+
+            <h3 class="font-semibold text-[#0D3E6E] mb-2">
+              ${product.name}
+            </h3>
+
+            <div class="flex justify-between items-center mb-3">
+
+              <span class="font-bold text-[#1A6FBA]">
+                Rs. ${product.price}
+              </span>
+
+              <span class="text-xs text-green-600">
+                In Stock
+              </span>
+
+            </div>
+
+            <button
+              class="cart-btn"
+              onclick="addToCart(${product.id}, '${product.name}', ${product.price})"
+            >
+              + Add To Cart
+            </button>
+
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  function filterProducts(element, category) {
+
+    document.querySelectorAll(".category-chip")
+      .forEach(chip => chip.classList.remove("active"));
+
+    element.classList.add("active");
+
+    if (category === "all") {
+      renderProducts(products);
+      return;
+    }
+
+    const filtered = products.filter(product => {
+      return product.category == category;
+    });
+
+    renderProducts(filtered);
+  }
+
+  // UPDATED FUNCTION
+  function addToCart(id, name, price) {
+
+    window.location.href = "login.php";
+
+  }
+
+  function showToast() {
+
+    const toast = document.getElementById("toast");
+
+    toast.classList.add("show");
+
+    setTimeout(() => {
+      toast.classList.remove("show");
+    }, 2200);
+  }
+
+  // INIT
+  renderProducts(products);
+  updateCartCount();
+
+</script>
+
+</body>
+</html>
