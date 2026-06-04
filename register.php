@@ -119,16 +119,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <span class="serif text-2xl text-white">DechenShop</span>
     </a>
  
-    <div class="relative z-10 flex justify-center">
-      <svg viewBox="0 0 200 220" width="180" xmlns="http://www.w3.org/2000/svg">
-        <rect x="40" y="100" width="120" height="100" rx="10" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/>
-        <line x1="58" y1="120" x2="142" y2="120" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/>
-        <line x1="58" y1="136" x2="142" y2="136" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/>
-        <line x1="58" y1="152" x2="120" y2="152" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/>
-        <line x1="58" y1="168" x2="130" y2="168" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/>
-        <!-- Check badge -->
-        <circle cx="152" cy="108" r="14" fill="rgba(59,158,245,0.4)" stroke="rgba(59,158,245,0.7)" stroke-width="1.5"/>
-        <path d="M145 108 l5 5 l9-9" stroke="rgba(255,255,255,0.9)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <div class="relative z-10 flex justify-center py-6">
+      <svg width="160" height="160" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" class="text-white opacity-90">
+        <line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line>
+        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+        <line x1="12" y1="22.08" x2="12" y2="12"></line>
       </svg>
     </div>
  

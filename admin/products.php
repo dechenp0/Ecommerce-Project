@@ -17,7 +17,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $price       = (float)($_POST['price'] ?? 0);
         $stock       = (int)($_POST['stock'] ?? 0);
         $category_id = (int)($_POST['category_id'] ?? 0);
-        $image       = trim($_POST['image'] ?? '');
+        
+        $image = '';
+        if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+            $tmp_name = $_FILES['image']['tmp_name'];
+            $file_name = time() . '_' . basename($_FILES['image']['name']);
+            $target_dir = "../assets/images/products/";
+            if (move_uploaded_file($tmp_name, $target_dir . $file_name)) {
+                $image = $file_name;
+            }
+        }
  
         if (empty($name) || $price <= 0) {
             $msg = 'Name and valid price are required.';
@@ -30,18 +39,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $msg = 'Product added successfully.';
             } else {
                 $id   = (int)$_POST['product_id'];
-                $stmt = $conn->prepare("UPDATE products SET name=?,description=?,price=?,stock=?,category_id=?,image=? WHERE id=?");
-                $stmt->bind_param("ssdiisi", $name, $description, $price, $stock, $category_id, $image, $id);
+                if (empty($image)) {
+                    $stmt = $conn->prepare("UPDATE products SET name=?,description=?,price=?,stock=?,category_id=? WHERE id=?");
+                    $stmt->bind_param("ssdiii", $name, $description, $price, $stock, $category_id, $id);
+                } else {
+                    $stmt = $conn->prepare("UPDATE products SET name=?,description=?,price=?,stock=?,category_id=?,image=? WHERE id=?");
+                    $stmt->bind_param("ssdiisi", $name, $description, $price, $stock, $category_id, $image, $id);
+                }
                 $stmt->execute();
                 $msg = 'Product updated successfully.';
             }
         }
     } elseif ($action === 'delete') {
         $id   = (int)$_POST['product_id'];
-        $stmt = $conn->prepare("DELETE FROM products WHERE id=?");
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        $msg = 'Product deleted.';
+        try {
+            $stmt = $conn->prepare("DELETE FROM products WHERE id=?");
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            $msg = 'Product deleted.';
+        } catch (mysqli_sql_exception $e) {
+            $msg = 'Error deleting product. It is linked to existing carts or orders.';
+            $msg_type = 'error';
+        }
     }
 }
  
@@ -144,12 +163,19 @@ while ($c = $categories->fetch_assoc()) $cats_arr[] = $c;
     <table>
       <thead>
         <tr>
-          <th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th>
+          <th>Image</th><th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th>
         </tr>
       </thead>
       <tbody>
         <?php while ($p = $products->fetch_assoc()): ?>
         <tr>
+          <td>
+            <?php if (!empty($p['image']) && file_exists("../assets/images/products/" . $p['image'])): ?>
+              <img src="../assets/images/products/<?= htmlspecialchars($p['image']) ?>" alt="Product" style="width:50px;height:50px;object-fit:cover;border-radius:8px;border:1px solid #e2f0ff;"/>
+            <?php else: ?>
+              <div style="width:50px;height:50px;background:#EBF5FF;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:10px;">No Img</div>
+            <?php endif; ?>
+          </td>
           <td>
             <div style="font-weight:600;color:#0D3E6E;"><?= htmlspecialchars($p['name']) ?></div>
             <div style="font-size:12px;color:#94a3b8;margin-top:2px;"><?= htmlspecialchars(substr($p['description'] ?? '', 0, 50)) ?></div>
@@ -184,7 +210,7 @@ while ($c = $categories->fetch_assoc()) $cats_arr[] = $c;
       <h2 class="serif text-2xl" style="color:#0D3E6E;" id="modalTitle">Add Product</h2>
       <button onclick="closeModal()" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:22px;line-height:1;">×</button>
     </div>
-    <form method="POST" id="productForm">
+    <form method="POST" id="productForm" enctype="multipart/form-data">
       <input type="hidden" name="action" id="formAction" value="add"/>
       <input type="hidden" name="product_id" id="formProductId"/>
  
@@ -216,8 +242,9 @@ while ($c = $categories->fetch_assoc()) $cats_arr[] = $c;
         </select>
       </div>
       <div style="margin-bottom:20px;">
-        <label class="form-label">Image filename (e.g. notebook.jpg)</label>
-        <input type="text" name="image" id="fImage" class="form-input" placeholder="product.jpg"/>
+        <label class="form-label">Product Image</label>
+        <input type="file" name="image" id="fImage" class="form-input" accept="image/*"/>
+        <p style="font-size:12px;color:#94a3b8;margin-top:4px;">Leave blank to keep current image.</p>
       </div>
       <div style="display:flex;gap:10px;">
         <button type="submit" style="flex:1;background:#3B9EF5;color:#fff;border:none;border-radius:10px;padding:12px;font-weight:600;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;">Save Product</button>
@@ -248,7 +275,7 @@ function editProduct(p) {
   document.getElementById('fPrice').value         = p.price;
   document.getElementById('fStock').value         = p.stock;
   document.getElementById('fCat').value           = p.category_id || '';
-  document.getElementById('fImage').value         = p.image || '';
+  document.getElementById('fImage').value         = '';
 }
 // Close on backdrop click
 document.getElementById('productModal').addEventListener('click', function(e) {

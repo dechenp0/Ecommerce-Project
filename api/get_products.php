@@ -39,8 +39,9 @@ $result   = $stmt->get_result();
 $products = [];
  
 while ($row = $result->fetch_assoc()) {
-    $row['image_url'] = !empty($row['image'])
-        ? '../assets/images/products/' . $row['image']
+    $file_path = '../assets/images/products/' . $row['image'];
+    $row['image_url'] = (!empty($row['image']) && file_exists($file_path))
+        ? 'assets/images/products/' . $row['image']
         : null;
     $products[] = $row;
 }

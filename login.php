@@ -217,19 +217,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </a>
  
     <!-- Illustration -->
-    <div class="relative z-10 flex justify-center">
-      <svg viewBox="0 0 200 200" width="180" xmlns="http://www.w3.org/2000/svg">
-        <rect x="30" y="30" width="100" height="140" rx="10" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
-        <rect x="30" y="30" width="18" height="140" rx="5" fill="rgba(59,158,245,0.5)"/>
-        <line x1="62" y1="60" x2="118" y2="60" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
-        <line x1="62" y1="76" x2="118" y2="76" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
-        <line x1="62" y1="92" x2="100" y2="92" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
-        <line x1="62" y1="108" x2="118" y2="108" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
-        <rect x="120" y="70" width="50" height="70" rx="8" fill="rgba(59,158,245,0.2)" stroke="rgba(59,158,245,0.4)" stroke-width="1.5"/>
-        <line x1="130" y1="88" x2="162" y2="88" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
-        <line x1="130" y1="100" x2="155" y2="100" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
-        <circle cx="155" cy="50" r="18" fill="rgba(59,158,245,0.25)" stroke="rgba(59,158,245,0.5)" stroke-width="1.5"/>
-        <path d="M147 50 l5 5 l9-9" stroke="rgba(255,255,255,0.7)" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <div class="relative z-10 flex justify-center py-6">
+      <svg width="160" height="160" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" class="text-white opacity-90">
+        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <path d="M16 10a4 4 0 0 1-8 0"></path>
       </svg>
     </div>
  
