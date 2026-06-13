@@ -20,63 +20,54 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
   /* ── Sidebar ── */
   .u-sidebar {
-    width: 240px;
-    background: linear-gradient(160deg, #0D3E6E 0%, #0a2e54 100%);
+    width: 220px;
+    background: #0D3E6E;
     min-height: 100vh;
+    padding: 0;
+    flex-shrink: 0;
     position: fixed;
-    top: 0; left: 0;
+    top: 0;
+    left: 0;
     height: 100%;
     display: flex;
     flex-direction: column;
     z-index: 100;
-    box-shadow: 4px 0 24px rgba(13,62,110,0.12);
   }
   .u-sidebar-logo {
-    padding: 28px 22px 22px;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
+    padding: 24px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
   }
-  .u-sidebar-nav { flex: 1; padding: 18px 0; overflow-y: auto; }
-  .u-nav-section {
-    padding: 6px 22px 4px;
-    font-size: 10px;
-    color: rgba(255,255,255,0.28);
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-top: 10px;
+  .u-sidebar-nav {
+    flex: 1;
+    padding: 16px 0;
+    overflow-y: auto;
   }
   .u-nav-item {
     display: flex;
     align-items: center;
-    gap: 11px;
-    padding: 11px 22px;
-    color: #A8D4F8;
+    gap: 10px;
+    padding: 12px 20px;
+    color: #C7E4FF;
     font-size: 14px;
     font-weight: 500;
     text-decoration: none;
-    transition: background 0.15s, color 0.15s, padding-left 0.15s;
-    position: relative;
-    border-radius: 0;
+    transition: background 0.15s, color 0.15s;
+    cursor: pointer;
   }
-  .u-nav-item:hover {
-    background: rgba(59,158,245,0.15);
-    color: #fff;
-    padding-left: 26px;
-  }
-  .u-nav-item.active {
-    background: rgba(59,158,245,0.22);
+  .u-nav-item:hover, .u-nav-item.active {
+    background: rgba(59,158,245,0.2);
     color: #fff;
   }
-  .u-nav-item.active::before {
-    content: '';
-    position: absolute;
-    left: 0; top: 6px; bottom: 6px;
-    width: 3px;
-    background: #3B9EF5;
-    border-radius: 0 3px 3px 0;
+  .u-nav-item svg { flex-shrink: 0; }
+  .u-nav-section {
+    padding: 8px 20px;
+    font-size: 10px;
+    color: rgba(255,255,255,0.3);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 8px;
   }
-  .u-nav-item svg { flex-shrink: 0; opacity: 0.85; }
-  .u-nav-item.active svg, .u-nav-item:hover svg { opacity: 1; }
 
   /* Cart badge */
   .cart-badge {
@@ -92,7 +83,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
   }
 
   /* ── Main ── */
-  .u-main { margin-left: 240px; flex: 1; padding: 36px 40px; min-width: 0; }
+  .u-main {
+    margin-left: 220px;
+    flex: 1;
+    padding: 32px;
+    min-width: 0;
+  }
 
   @media (max-width: 768px) {
     .u-sidebar { width: 200px; }
@@ -104,13 +100,13 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
 <aside class="u-sidebar">
   <div class="u-sidebar-logo">
-    <a href="../index.html" style="display:flex;align-items:center;gap:9px;text-decoration:none;">
-      <div style="width:32px;height:32px;background:#3B9EF5;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-        <svg width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M4 4h16v2H4V4zm0 4h10v2H4V8zm0 4h16v2H4v-2zm0 4h10v2H4v-2z" fill="#fff"/></svg>
+    <a href="../index.html" style="display:flex;align-items:center;gap:8px;text-decoration:none;">
+      <div style="width:30px;height:30px;background:#3B9EF5;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M4 4h16v2H4V4zm0 4h10v2H4V8zm0 4h16v2H4v-2zm0 4h16v2H4v-2zm0 4h10v2H4v-2z" fill="#fff"/></svg>
       </div>
-      <span class="serif" style="font-size:20px;color:#fff;letter-spacing:0.01em;">Paperly</span>
+      <span class="serif text-xl text-white">DechenShop</span>
     </a>
-    <span style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:5px;display:block;">My Account</span>
+    <span style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:4px;display:block;">My Account</span>
   </div>
 
   <nav class="u-sidebar-nav">
@@ -139,23 +135,14 @@ $current_page = basename($_SERVER['PHP_SELF']);
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
       My Orders
     </a>
-
-    <a href="../logout.php" class="u-nav-item" style="color:#f87171;margin-top:4px;">
+    <div class="u-nav-section">Account</div>
+    <a href="../logout.php" class="u-nav-item" style="color:#f87171;">
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
       Logout
     </a>
   </nav>
 
-  <!-- User info at bottom -->
-  <div style="padding:16px 22px;border-top:1px solid rgba(255,255,255,0.07);">
-    <div style="display:flex;align-items:center;gap:10px;">
-      <div style="width:34px;height:34px;background:linear-gradient(135deg,#3B9EF5,#1A6FBA);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;flex-shrink:0;">
-        <?= strtoupper(substr($_SESSION['full_name'],0,1)) ?>
-      </div>
-      <div style="overflow:hidden;">
-        <p style="font-size:13px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"><?= htmlspecialchars($_SESSION['full_name']) ?></p>
-        <p style="font-size:11px;color:rgba(255,255,255,0.35);">Customer</p>
-      </div>
-    </div>
+  <div style="padding:16px 20px;font-size:12px;color:rgba(255,255,255,0.25);">
+    Logged in as<br/><span style="color:rgba(255,255,255,0.5);"><?= htmlspecialchars($_SESSION['full_name']) ?></span>
   </div>
 </aside>

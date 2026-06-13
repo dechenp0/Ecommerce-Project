@@ -5,9 +5,22 @@ require_once '../config/db.php';
 $page_title = 'My Orders – Paperly';
 
 $uid    = (int)$_SESSION['user_id'];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_order_id'])) {
+    $del_oid = (int)$_POST['delete_order_id'];
+    
+    // Ensure order belongs to user
+    $check = $conn->query("SELECT id FROM orders WHERE id = $del_oid AND user_id = $uid");
+    if ($check->num_rows > 0) {
+        $conn->query("DELETE FROM order_items WHERE order_id = $del_oid");
+        $conn->query("DELETE FROM orders WHERE id = $del_oid");
+    }
+}
+
 $orders = $conn->query("
-    SELECT o.id, o.total, o.status, o.created_at,
-           GROUP_CONCAT(p.name ORDER BY p.name SEPARATOR ', ') as items
+    SELECT o.id, o.total, o.status, o.payment_status, o.created_at,
+           GROUP_CONCAT(p.name ORDER BY p.name SEPARATOR ', ') as items,
+           MIN(p.image) as first_image
     FROM orders o
     LEFT JOIN order_items oi ON o.id = oi.order_id
     LEFT JOIN products p     ON oi.product_id = p.id
@@ -55,16 +68,26 @@ $orders = $conn->query("
          onmouseover="this.style.boxShadow='0 8px 30px rgba(59,158,245,0.1)';this.style.transform='translateY(-2px)'"
          onmouseout="this.style.boxShadow='';this.style.transform=''">
 
-      <!-- Icon -->
-      <div style="width:52px;height:52px;background:#EBF5FF;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">
-        <?= $icon ?>
+      <!-- Icon / Image -->
+      <div style="width:52px;height:52px;background:#EBF5FF;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;overflow:hidden;">
+        <?php if (!empty($o['first_image'])): ?>
+          <img src="../assets/images/products/<?= htmlspecialchars(basename($o['first_image'])) ?>" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+          <span style="display:none;"><?= $icon ?></span>
+        <?php else: ?>
+          <?= $icon ?>
+        <?php endif; ?>
       </div>
 
       <!-- Details -->
       <div style="flex:1;min-width:0;">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:5px;flex-wrap:wrap;">
-          <span style="font-weight:700;color:#0D3E6E;font-size:15px;">#<?= $o['id'] ?></span>
           <span style="background:<?=$bg?>;color:<?=$tc?>;padding:2px 12px;border-radius:20px;font-size:11px;font-weight:600;text-transform:capitalize;"><?= $o['status'] ?></span>
+          <?php 
+            $pstat = $o['payment_status'] ?? 'pending';
+            $pbg = $pstat === 'paid' ? '#dcfce7' : ($pstat === 'failed' ? '#fee2e2' : '#fef9c3');
+            $ptc = $pstat === 'paid' ? '#15803d' : ($pstat === 'failed' ? '#dc2626' : '#854d0e');
+          ?>
+          <span style="background:<?= $pbg ?>;color:<?= $ptc ?>;padding:2px 12px;border-radius:20px;font-size:11px;font-weight:600;text-transform:capitalize;">Pay: <?= htmlspecialchars($pstat) ?></span>
         </div>
         <p style="font-size:13px;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px;"><?= htmlspecialchars($o['items'] ?? '—') ?></p>
         <p style="font-size:12px;color:#94a3b8;"><?= date('F j, Y', strtotime($o['created_at'])) ?></p>
@@ -73,7 +96,10 @@ $orders = $conn->query("
       <!-- Amount -->
       <div style="text-align:right;flex-shrink:0;">
         <p style="font-weight:700;font-size:18px;color:#1A6FBA;">Rs. <?= number_format($o['total']) ?></p>
-        <a href="order_detail.php?id=<?= $o['id'] ?>" style="font-size:12px;color:#3B9EF5;text-decoration:none;font-weight:500;">View details →</a>
+        <form method="POST" onsubmit="return confirm('Are you sure you want to delete this order?');" style="margin-top:8px;">
+          <input type="hidden" name="delete_order_id" value="<?= $o['id'] ?>"/>
+          <button type="submit" style="background:#fee2e2;color:#dc2626;border:none;padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#fecaca'" onmouseout="this.style.background='#fee2e2'">Delete Order</button>
+        </form>
       </div>
     </div>
     <?php endwhile; ?>

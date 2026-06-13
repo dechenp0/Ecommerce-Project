@@ -141,23 +141,7 @@ $user = $conn->query("SELECT * FROM users WHERE id = $uid")->fetch_assoc();
     <p style="color:#94a3b8;font-size:14px;margin-top:4px;">Almost there — just fill in your details</p>
   </div>
 
-  <!-- Progress Steps -->
-  <div style="display:flex;align-items:center;gap:8px;margin-bottom:32px;">
-    <div style="display:flex;align-items:center;gap:8px;">
-      <div style="width:28px;height:28px;background:#3B9EF5;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;">1</div>
-      <span style="font-size:13px;font-weight:600;color:#0D3E6E;">Delivery</span>
-    </div>
-    <div style="flex:1;height:2px;background:#d9eeff;max-width:60px;"></div>
-    <div style="display:flex;align-items:center;gap:8px;">
-      <div style="width:28px;height:28px;background:#3B9EF5;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;">2</div>
-      <span style="font-size:13px;font-weight:600;color:#0D3E6E;">Payment</span>
-    </div>
-    <div style="flex:1;height:2px;background:#d9eeff;max-width:60px;"></div>
-    <div style="display:flex;align-items:center;gap:8px;">
-      <div style="width:28px;height:28px;background:#d9eeff;color:#94a3b8;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;" id="step3badge">3</div>
-      <span style="font-size:13px;font-weight:500;color:#94a3b8;">Confirm</span>
-    </div>
-  </div>
+
 
   <div style="display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start;">
 
@@ -167,7 +151,6 @@ $user = $conn->query("SELECT * FROM users WHERE id = $uid")->fetch_assoc();
       <!-- Delivery Address -->
       <div style="background:#fff;border:1px solid #dbeeff;border-radius:20px;padding:26px;">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
-          <div class="step-badge">1</div>
           <h2 class="serif" style="font-size:18px;color:#0D3E6E;">Delivery Address</h2>
         </div>
 
@@ -210,49 +193,7 @@ $user = $conn->query("SELECT * FROM users WHERE id = $uid")->fetch_assoc();
         </div>
       </div>
 
-      <!-- Payment Method -->
-      <div style="background:#fff;border:1px solid #dbeeff;border-radius:20px;padding:26px;">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
-          <div class="step-badge">2</div>
-          <h2 class="serif" style="font-size:18px;color:#0D3E6E;">Payment Method</h2>
-        </div>
 
-        <div style="display:flex;flex-direction:column;gap:10px;" id="paymentOptions">
-
-          <label class="payment-option selected" onclick="selectPayment(this,'cod')">
-            <input type="radio" name="payment" value="cod" checked/>
-            <span style="font-size:22px;">💵</span>
-            <div>
-              <p style="font-weight:600;color:#0D3E6E;font-size:14px;">Cash on Delivery</p>
-              <p style="font-size:12px;color:#94a3b8;">Pay when your order arrives</p>
-            </div>
-          </label>
-
-          <label class="payment-option" onclick="selectPayment(this,'esewa')">
-            <input type="radio" name="payment" value="esewa"/>
-            <span style="font-size:22px;">🟢</span>
-            <div>
-              <p style="font-weight:600;color:#0D3E6E;font-size:14px;">eSewa</p>
-              <p style="font-size:12px;color:#94a3b8;">Pay via eSewa digital wallet</p>
-            </div>
-          </label>
-
-          <label class="payment-option" onclick="selectPayment(this,'khalti')">
-            <input type="radio" name="payment" value="khalti"/>
-            <span style="font-size:22px;">💜</span>
-            <div>
-              <p style="font-weight:600;color:#0D3E6E;font-size:14px;">Khalti</p>
-              <p style="font-size:12px;color:#94a3b8;">Pay via Khalti digital wallet</p>
-            </div>
-          </label>
-
-        </div>
-
-        <!-- eSewa / Khalti info box -->
-        <div id="digitalPayNote" style="display:none;background:#EBF5FF;border:1px solid #93CBFF;border-radius:12px;padding:12px 16px;margin-top:14px;font-size:13px;color:#1A6FBA;">
-          📲 You'll be redirected to complete payment after placing your order.
-        </div>
-      </div>
 
     </div>
 
@@ -310,7 +251,7 @@ $user = $conn->query("SELECT * FROM users WHERE id = $uid")->fetch_assoc();
       </div>
 
       <button id="placeOrderBtn" onclick="placeOrder()">
-        Place Order →
+        Pay with eSewa
       </button>
 
       <a href="cart.php" style="display:block;text-align:center;color:#94a3b8;font-size:13px;margin-top:12px;text-decoration:none;">
@@ -329,7 +270,7 @@ $user = $conn->query("SELECT * FROM users WHERE id = $uid")->fetch_assoc();
 <div id="toast"></div>
 
 <script>
-let selectedPayment = 'cod';
+let selectedPayment = 'esewa';
 
 function selectPayment(label, method) {
   document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('selected'));
@@ -359,7 +300,7 @@ async function placeOrder() {
 
   const btn = document.getElementById('placeOrderBtn');
   btn.disabled = true;
-  btn.textContent = 'Placing Order...';
+  btn.textContent = 'Redirecting...';
 
   const payload = {
     full_name      : fullName,
@@ -380,17 +321,20 @@ async function placeOrder() {
     const data = await res.json();
 
     if (data.success) {
-      // Redirect to confirmation page
-      window.location.href = `order_confirmation.php?order_id=${data.order_id}`;
+      if (selectedPayment === 'esewa') {
+        window.location.href = `esewa-payment.php?order_id=${data.order_id}`;
+      } else {
+        window.location.href = `order_confirmation.php?order_id=${data.order_id}`;
+      }
     } else {
       showToast('⚠ ' + (data.message || 'Could not place order'), true);
       btn.disabled = false;
-      btn.textContent = 'Place Order →';
+      btn.textContent = 'Pay with eSewa';
     }
   } catch (err) {
     showToast('⚠ Something went wrong. Please try again.', true);
     btn.disabled = false;
-    btn.textContent = 'Place Order →';
+    btn.textContent = 'Pay with eSewa';
   }
 }
 

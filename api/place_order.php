@@ -79,9 +79,11 @@ $conn->begin_transaction();
 
 try {
     // 1. Insert order — created_at has DEFAULT current_timestamp() so skip it
+    $transaction_uuid = uniqid('esewa_', true);
+    
     $conn->query("
-        INSERT INTO orders (user_id, total, delivery_fee, payment_method, payment_status, delivery_address, status)
-        VALUES ($uid, $grand_total, $delivery_fee, '$payment_method', '$payment_status', '$delivery_address', 'pending')
+        INSERT INTO orders (user_id, total, delivery_fee, payment_method, payment_status, delivery_address, status, transaction_uuid)
+        VALUES ($uid, $grand_total, $delivery_fee, '$payment_method', '$payment_status', '$delivery_address', 'pending', '$transaction_uuid')
     ");
 
     if ($conn->error) throw new Exception($conn->error);
@@ -109,6 +111,7 @@ try {
     echo json_encode([
         'success'  => true,
         'order_id' => $order_id,
+        'transaction_uuid' => $transaction_uuid,
         'message'  => 'Order placed successfully'
     ]);
 

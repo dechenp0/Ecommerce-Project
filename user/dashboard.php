@@ -10,7 +10,7 @@ $order_res   = $conn->query("SELECT COUNT(*) as total, SUM(total) as spent FROM 
 $order_stats = $order_res->fetch_assoc();
 $cart_res    = $conn->query("SELECT SUM(quantity) as items FROM cart WHERE user_id = $uid");
 $cart_items  = $cart_res->fetch_assoc()['items'] ?? 0;
-$recent      = $conn->query("SELECT o.id, o.total, o.status, o.created_at FROM orders o WHERE o.user_id = $uid ORDER BY o.created_at DESC LIMIT 5");
+$recent      = $conn->query("SELECT o.id, o.total, o.status, o.payment_status, o.created_at FROM orders o WHERE o.user_id = $uid ORDER BY o.created_at DESC LIMIT 5");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -94,6 +94,7 @@ $recent      = $conn->query("SELECT o.id, o.total, o.status, o.created_at FROM o
           <th style="padding:12px 26px;text-align:left;color:#64748b;font-weight:500;font-size:13px;">Order #</th>
           <th style="padding:12px 26px;text-align:left;color:#64748b;font-weight:500;font-size:13px;">Date</th>
           <th style="padding:12px 26px;text-align:left;color:#64748b;font-weight:500;font-size:13px;">Total</th>
+          <th style="padding:12px 26px;text-align:left;color:#64748b;font-weight:500;font-size:13px;">Payment</th>
           <th style="padding:12px 26px;text-align:left;color:#64748b;font-weight:500;font-size:13px;">Status</th>
         </tr>
       </thead>
@@ -106,6 +107,14 @@ $recent      = $conn->query("SELECT o.id, o.total, o.status, o.created_at FROM o
           <td style="padding:14px 26px;font-weight:700;color:#0D3E6E;">#<?= $ord['id'] ?></td>
           <td style="padding:14px 26px;color:#64748b;"><?= date('M d, Y', strtotime($ord['created_at'])) ?></td>
           <td style="padding:14px 26px;font-weight:700;color:#1A6FBA;">Rs. <?= number_format($ord['total']) ?></td>
+          <td style="padding:14px 26px;">
+            <?php 
+              $pstat = $ord['payment_status'] ?? 'pending';
+              $pbg = $pstat === 'paid' ? '#dcfce7' : ($pstat === 'failed' ? '#fee2e2' : '#fef9c3');
+              $ptc = $pstat === 'paid' ? '#15803d' : ($pstat === 'failed' ? '#dc2626' : '#854d0e');
+            ?>
+            <span style="background:<?= $pbg ?>;color:<?= $ptc ?>;padding:3px 12px;border-radius:20px;font-size:12px;font-weight:600;text-transform:capitalize;"><?= htmlspecialchars($pstat) ?></span>
+          </td>
           <td style="padding:14px 26px;">
             <span style="background:<?=$bg?>;color:<?=$tc?>;padding:3px 12px;border-radius:20px;font-size:12px;font-weight:600;text-transform:capitalize;"><?= $ord['status'] ?></span>
           </td>

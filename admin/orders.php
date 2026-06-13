@@ -77,7 +77,7 @@ $orders = $conn->query("
   <div style="background:#fff;border:1px solid #d9eeff;border-radius:18px;overflow:hidden;">
     <table>
       <thead>
-        <tr><th>#</th><th>Customer</th><th>Email</th><th>Total</th><th>Date</th><th>Status</th></tr>
+        <tr><th>#</th><th>Customer</th><th>Email</th><th>Total</th><th>Date</th><th>Payment</th><th>Status</th></tr>
       </thead>
       <tbody>
         <?php while ($o = $orders->fetch_assoc()):
@@ -90,6 +90,16 @@ $orders = $conn->query("
           <td style="color:#64748b;font-size:13px;"><?= htmlspecialchars($o['email']) ?></td>
           <td style="font-weight:600;color:#1A6FBA;">Rs. <?= number_format($o['total']) ?></td>
           <td style="color:#94a3b8;font-size:13px;"><?= date('M d, Y', strtotime($o['created_at'])) ?></td>
+          <td>
+            <?php 
+              $pstat = $o['payment_status'] ?? 'pending';
+              $pbg = $pstat === 'paid' ? '#dcfce7' : ($pstat === 'failed' ? '#fee2e2' : '#fef9c3');
+              $ptc = $pstat === 'paid' ? '#15803d' : ($pstat === 'failed' ? '#dc2626' : '#854d0e');
+            ?>
+            <span style="background:<?= $pbg ?>;color:<?= $ptc ?>;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:600;text-transform:uppercase;">
+              <?= htmlspecialchars($pstat) ?>
+            </span>
+          </td>
           <td>
             <form method="POST" style="display:flex;align-items:center;gap:8px;">
               <input type="hidden" name="order_id" value="<?= $o['id'] ?>"/>

@@ -2,7 +2,7 @@
 require_once '../includes/auth_check.php';
 checkAuth('admin');
 require_once '../config/db.php';
-$page_title = 'Admin Dashboard – Paperly';
+$page_title = 'Admin Dashboard – DechenShop';
  
 // Stats
 $total_orders   = $conn->query("SELECT COUNT(*) as c FROM orders")->fetch_assoc()['c'];
@@ -12,7 +12,7 @@ $total_users    = $conn->query("SELECT COUNT(*) as c FROM users WHERE role='user
  
 // Recent orders
 $recent_orders = $conn->query("
-    SELECT o.id, o.total, o.status, o.created_at, u.full_name
+    SELECT o.id, o.total, o.status, o.payment_status, o.created_at, u.full_name
     FROM orders o JOIN users u ON o.user_id = u.id
     ORDER BY o.created_at DESC LIMIT 8
 ");
@@ -60,7 +60,7 @@ $low_stock = $conn->query("SELECT name, stock FROM products WHERE stock < 10 ORD
       <div style="width:30px;height:30px;background:#3B9EF5;border-radius:8px;display:flex;align-items:center;justify-content:center;">
         <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M4 4h16v2H4V4zm0 4h10v2H4V8zm0 4h16v2H4v-2zm0 4h10v2H4v-2z" fill="#fff"/></svg>
       </div>
-      <span class="serif text-xl text-white">Paperly</span>
+      <span class="serif text-xl text-white">DechenShop</span>
     </a>
     <span style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:4px;display:block;">Admin Panel</span>
   </div>
@@ -154,7 +154,7 @@ $low_stock = $conn->query("SELECT name, stock FROM products WHERE stock < 10 ORD
       <table>
         <thead>
           <tr>
-            <th>#</th><th>Customer</th><th>Total</th><th>Status</th><th>Date</th>
+            <th>#</th><th>Customer</th><th>Total</th><th>Payment</th><th>Status</th><th>Date</th>
           </tr>
         </thead>
         <tbody>
@@ -166,6 +166,14 @@ $low_stock = $conn->query("SELECT name, stock FROM products WHERE stock < 10 ORD
             <td style="font-weight:600;color:#0D3E6E;">#<?= $ord['id'] ?></td>
             <td><?= htmlspecialchars($ord['full_name']) ?></td>
             <td style="font-weight:600;">Rs. <?= number_format($ord['total']) ?></td>
+            <td>
+              <?php 
+                $pstat = $ord['payment_status'] ?? 'pending';
+                $pbg = $pstat === 'paid' ? '#dcfce7' : ($pstat === 'failed' ? '#fee2e2' : '#fef9c3');
+                $ptc = $pstat === 'paid' ? '#15803d' : ($pstat === 'failed' ? '#dc2626' : '#854d0e');
+              ?>
+              <span style="background:<?= $pbg ?>;color:<?= $ptc ?>;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:600;text-transform:uppercase;"><?= htmlspecialchars($pstat) ?></span>
+            </td>
             <td><span style="background:<?=$bg?>;color:<?=$tc?>;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:600;text-transform:capitalize;"><?= $ord['status'] ?></span></td>
             <td style="color:#94a3b8;font-size:13px;"><?= date('M d', strtotime($ord['created_at'])) ?></td>
           </tr>

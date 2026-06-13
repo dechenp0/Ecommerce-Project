@@ -4,7 +4,22 @@ checkAuth('admin');
 require_once '../config/db.php';
 $page_title = 'Manage Users - Paperly';
 
-$users = $conn->query("SELECT id, full_name, email, role, created_at FROM users ORDER BY created_at DESC");
+$admin_id = (int)$_SESSION['user_id'];
+$msg = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_user_id'])) {
+    $del_id = (int)$_POST['delete_user_id'];
+    if ($del_id !== $admin_id) {
+        $conn->query("DELETE FROM cart WHERE user_id = $del_id");
+        $conn->query("DELETE FROM orders WHERE user_id = $del_id");
+        $conn->query("DELETE FROM users WHERE id = $del_id");
+        if (!$conn->error) {
+            $msg = "User #$del_id has been successfully deleted.";
+        }
+    }
+}
+
+$users = $conn->query("SELECT id, full_name, email, role, created_at FROM users WHERE id != $admin_id ORDER BY created_at DESC");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -52,10 +67,14 @@ $users = $conn->query("SELECT id, full_name, email, role, created_at FROM users 
   <h1 class="serif text-3xl mb-2" style="color:#0D3E6E;">Users</h1>
   <p style="color:#94a3b8;font-size:14px;margin-bottom:24px;">Manage all registered users</p>
  
+  <?php if (!empty($msg)): ?>
+  <div style="background:#f0fdf4;border:1px solid #86efac;color:#16a34a;border-radius:10px;padding:10px 16px;margin-bottom:16px;font-size:14px;"><?= htmlspecialchars($msg) ?></div>
+  <?php endif; ?>
+
   <div style="background:#fff;border:1px solid #d9eeff;border-radius:18px;overflow:hidden;">
     <table>
       <thead>
-        <tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Joined</th></tr>
+        <tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Joined</th><th>Action</th></tr>
       </thead>
       <tbody>
         <?php while($u = $users->fetch_assoc()): ?>
@@ -69,6 +88,14 @@ $users = $conn->query("SELECT id, full_name, email, role, created_at FROM users 
             </span>
           </td>
           <td style="color:#94a3b8;font-size:13px;"><?= date('M d, Y', strtotime($u['created_at'])) ?></td>
+          <td>
+            <form method="POST" onsubmit="return confirm('Are you sure you want to delete this user? This action cannot be undone.');" style="margin:0;">
+              <input type="hidden" name="delete_user_id" value="<?= $u['id'] ?>">
+              <button type="submit" style="background:#fee2e2;color:#dc2626;border:none;padding:5px 12px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#fecaca'" onmouseout="this.style.background='#fee2e2'">
+                Delete
+              </button>
+            </form>
+          </td>
         </tr>
         <?php endwhile; ?>
       </tbody>
